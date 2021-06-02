@@ -1,12 +1,14 @@
 //IMPORTS
 import { gsap } from "gsap";
+import { MorphSVGPlugin} from "gsap/MorphSVGPlugin";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 // import { GSDevTools } from "gsap/GSDevTools";
 // import {MotionPathPlugin} from "gsap/MotionPathPlugin";
 // import {CustomEase} from "gsap/CustomEase";
 // import {CustomWiggle} from "gsap/CustomWiggle";
 
 //register Plugins
-gsap.registerPlugin(GSDevTools, MotionPathPlugin, CustomEase, CustomWiggle);
+gsap.registerPlugin(MorphSVGPlugin, DrawSVGPlugin);
 
 //**** SELECT ELEMENTS without jQuery ****\\
 
@@ -40,26 +42,127 @@ ready(() => {
 
   function init(){
 
-    // INTRO
+  // gsap.set(["#speed", "#gas", "#gear"],{alpha:0});
 
+  // INTRO BASE
     gsap.set("#logo", {transformOrigin: "50% 50%"});
     gsap.set("#minitype", {transformOrigin: "50% 50%"});
-
-    //   CustomWiggle.create("myWiggle", {wiggles: 50, type:"uniform"});
-    // //***********  fadeInTL init ****************
-    // //gsap.set("#moon", {alpha:0});
-    //   //gsap.set("#svg-container", {backgroundColor:"#333"});
-    //   gsap.set("#moon", {x:-100});
-    // //  gsap.set("#moon", { y:"+=200", delay:2});
-
-    //   gsap.to("#moon", {duration:0.5, x:"+=15", ease:"myWiggle"});
-
-
-
+    gsap.set("#mywheel1", {transformOrigin: "50% 50%", alpha:0});
+    gsap.set("#mywheel2", {transformOrigin: "50% 50%", alpha:0});
+    gsap.set("#backgroundb1", {transformOrigin: "50% 50%"});
+    // gsap.set("#speed", {transformOrigin: "center top", alpha:0});
+    // gsap.set("#gas", {transformOrigin: "center top", alpha:0});
+    // gsap.set("#gear", {transformOrigin: "center top", alpha:0});
+    // gsap.set("#mydials", {transformOrigin: "50% 50%", alpha:0});
+    // gsap.set("#backgroundb1", {alpha:0});
 
 
     //   //****** transformOrigin VS. svgOrigin  *****\\
-    //   // gsap.to("#moon", {duration:5, rotation:360, transformOrigin:"50% 50%"});
+    
+    // WHEEL 2 ROTATE/ SHRINK DOWN
+    // gsap.set("#mywheel2", {transformOrigin: "50% 50%"});
+    // gsap.to("#mywheel2", {duration:3.5, rotation:360, ease:"bounce"},"mywheel2");
+    // gsap.to("#mywheel2", {scale: 0.5, transformOrigin:"center bottom"});
+  // $('#mywheel2').attr("transform", "scale(0.5,1)");
+
+
+  // DIAL CIRCLES/ GROW UP
+  // $('#mydials').attr("transform", "scale(1,0.5)");
+  // gsap.set("#mydials", {transformOrigin:"center top"});
+
+
+  }
+
+
+  
+
+  //Nested Timelines
+  //***********  fadeInTL  ****************
+  function fadeInTL(){
+    let tl = gsap.timeline();
+
+// INTRO FADE IN
+    tl.from("#logo", { duration:1, scale:3, ease:"expo"}, "logo")
+    .from ("#minitype", {alpha:0, duration:0.8, scale:3}, "minitype")
+    .from("#logo", {alpha:0, duration:1, ease:"expo"}, "logo")
+    
+// WHEEL1 FADE IN
+    .from("#backgroundb1", {alpha:0, duration:1.5, ease:"expo"}, "backgroundb1")
+    .from("#mywheel1", { duration:0.3, scale:1, ease:"bounce"}, "mywheel1")
+    .to("#mywheel1", {alpha:1, duration:0.4, ease:"bounce"}, "mywheel1")
+    
+    .add("mywheel2", "-=0.5")
+    .to ("#mywheel2", {alpha:1, duration:3.5, rotation:360, ease:"bounce", transformOrigin:"50% 50%"},"mywheel2")
+    .to("#mywheel2", {scale: 0.5, transformOrigin:"center bottom"})
+    .to("#mywheel1", {alpha:0, duration:0.4}, "mywheel2+=2")
+
+// Dial circles Fade UP
+    .from("#circle1", {alpha:0, duration:0.5, scale:0.25, ease:"expo"})
+    .from("#circle2", {alpha:0, duration:0.6, scale:0.25, ease:"expo"})
+    .from("#circle3", {alpha:0, duration:0.7, scale:0.25, ease:"expo"})
+    
+
+// SECOND circles Fade UP
+    .to("#circle1", {alpha:0, y:"-=225", x:"-=150", duration:0.5, ease:"back"})
+    .to("#circle2", {alpha:0, y:"-=225", duration:0.5, ease:"back"})
+    .to("#circle3", {alpha:0, y:"-=225", x:"+=150", duration:0.5, ease:"back"})
+
+  // gears enter
+    .from ("#speed", {y:200, alpha:0, duration:0.4, scale:1})
+    .from("#gas", {y:100, alpha:0, duration:0.4, scale:0.5} )
+    .from("#gear", {y:100, alpha:0, duration:0.4, scale:0.5})
+
+  // gears up
+  // .to("#speed", {alpha:0, y:"-=50", duration:0.5})
+  // .to("#gas", {alpha:0, y:"-=50", duration:0.5})
+  // .to("#gear", {alpha:0, y:"-=50", duration:0.5})
+
+    // .to("#circle1","#circle2","#circle3", {repeat:-1, alpha:0, stagger:0.6, y:"-=225", duration:3, ease:"back"})
+    // .to("#mydials", {scale: 0.5, transformOrigin:"center top"})
+    // to("#mydials", {alpha:0, duration:0.4}, "mydials+=2")
+
+
+    ;//tl END
+    return tl;
+
+  }
+
+
+
+
+  function logomorphTL(){
+
+    let tl = gsap.timeline();
+    // MORPH LOGO
+      tl.from ("#logo", {alpha:0})
+          .to ("#logo", {duration:2, morphSVG: "#logowing"}, "+=1")
+          .to ("#logo", {duration:2, morphSVG: "#logo2", ease:"bounce"}, "+=1")
+    
+    // //background/ wheel 1 to 2 MORPH
+    //     .from ("#mywheel1", {alpha:0})
+    //     .to ("#mywheel1", {duration:2, morphSVG: "#mywheel2"}, "+=1")
+
+
+
+    ;//tl END
+    return tl;
+
+  }
+
+
+
+
+
+
+// QUESTIONS-- 
+// where in JS do I put the draw svg tool? 
+// how do I order the elements so they are working individually// how do I hide old elements that have served their purpose
+// Gsap.set and timeline 
+// do I need to keep putting tl if im starting on a new part or can i continue to add .from
+// if I want the details of my dial boxes to come in at staggered times (ex the speeds come in one number at a time) how / where do i do that
+// ^ same question but for circle color fills, I want them to turn colors 1 by 1
+
+
     //   //gsap.to("#moon", {duration:5, rotation:360, svgOrigin:"512 512"});
     // //*********** zoomTL init ****************
     // gsap.set(["#orange-mtn","#red-mtn","#front-mtns",".trees"], {transformOrigin:"center center"});
@@ -78,28 +181,12 @@ ready(() => {
     // //*********** moonLandingTL init ****************
 
 
-  }
-
-  //Nested Timelines
-  //***********  fadeInTL  ****************
-  function fadeInTL(){
-    let tl = gsap.timeline();
-
-    tl.from("#logo", { duration:1, scale:5, ease:"expo"}, "logo")
-    .from ("#minitype", {alpha:0, duration:1.5, scale:5})
-    .from("#logo", {alpha:0, duration:2, ease:"expo"}, "logo")
-    
-
-    ;//tl END
-    return tl;
-
-  }
 
   //*********** zoomTL ****************
   // function zoomTL(){
   //   let tl = gsap.timeline();
 
-  //   tl.from("#orange-mtn", {duration:6, scale:10, y:"+=1500", ease:"power4.out"}, "zoom")
+  // tl.from("#mywheel1", {duration:2, scale:10, y:"+=1500", ease:"bounce"}, "mywheel1")
   //   .from("#red-mtn", {duration:5.75, scale:10, y:"+=800", ease:"power4.out", tranformOrigin:"50% 50%"}, "zoom")
   //   .from("#front-mtns", {duration:5.5, scale:10, y:"+=600", ease:"power4.out"}, "zoom")
   //   .from("#trees-5", {duration:5.5, scale:10, y:"+=420", ease:"power4.out"}, "zoom")
@@ -238,7 +325,7 @@ gsap.set('#svg-container',{visibility:"visible"});
 
 //3. BUILD Main timeline
 mainTL.add(fadeInTL())
-// .add(zoomTL(),"-=4")
+.add(logomorphTL())
 // .add(spaceshipTL(),"-=6")
 // .add(liftOffTL())
 // .add(flightTL(),"target")
